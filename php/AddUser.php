@@ -22,7 +22,13 @@
 */
 	require_once('APIHandler.php');
 	require_once('Session.php');
+	require_once('ModuleHandler.php');
+
 	$api 										= \creamy\APIHandler::getInstance();
+	$mh 										= \creamy\ModuleHandler::getInstance();
+
+	//osTicket
+	$osTicketEnabled 							= $mh->moduleIsEnabled('osTicket');
 
 	$email = $_POST["email"];
 	$full_name = $_POST["fullname"];
@@ -40,7 +46,8 @@
 		'seats' 	=> $_POST["seats"],
 		'phone_login' 	=> $_POST["phone_logins"],
 		'phone_pass' 	=> $_POST["phone_pass"],
-		'server_ip' 	=> $_POST["ip"]
+		'server_ip' 	=> $_POST["ip"],
+		'osTicketEn'    => $osTicketEnabled
 	);
 
     	$output = $api->API_addUser($postfields);
@@ -65,6 +72,8 @@
 	        CURLOPT_FOLLOWLOCATION => true,
 	        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	        CURLOPT_CUSTOMREQUEST => "POST",
+			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_SSL_VERIFYPEER => false,
 	        CURLOPT_POSTFIELDS =>"{\r\n  \"email\": \"$email\",\r\n  \"name\": \"$full_name\",\r\n  \"password\": \"$password\",\r\n  \"username\": \"$username\",\r\n  \"roles\": [\"$roles\"]}",
 	        CURLOPT_HTTPHEADER => array(
         	        "Content-Type:application/json", "X-Auth-Token:$authToken", "X-User-Id:$userID"
